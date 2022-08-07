@@ -63,7 +63,7 @@ func Write(conn net.Conn, kind int, bytes []byte) error {
 }
 
 func readKind(conn net.Conn) (int, error) {
-	buf := make([]byte, KindSize)
+	buf := make([]byte, KindSize, 0)
 	_, err := conn.Read(buf)
 	println(buf)
 	if err != nil {
@@ -79,7 +79,7 @@ func readKind(conn net.Conn) (int, error) {
 }
 
 func readSize(conn net.Conn) (int, error) {
-	buf := make([]byte, SizeSize)
+	buf := make([]byte, SizeSize, 0)
 	_, err := conn.Read(buf)
 	println(buf)
 	if err != nil {
