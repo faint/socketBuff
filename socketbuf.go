@@ -11,9 +11,9 @@ const (
 )
 
 type SocketBuff struct {
-	kind  int
-	size  int
-	bytes []byte
+	Kind  int
+	Size  int
+	Bytes []byte
 }
 
 func Read(conn net.Conn) (*SocketBuff, error) {
@@ -37,9 +37,9 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 	}
 
 	return &SocketBuff{
-		kind:  kind,
-		size:  len(bytes),
-		bytes: bytes,
+		Kind:  kind,
+		Size:  len(bytes),
+		Bytes: bytes,
 	}, nil
 }
 
