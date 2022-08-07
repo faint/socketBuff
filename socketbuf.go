@@ -11,9 +11,9 @@ const (
 )
 
 type SocketBuff struct {
-	kind  int
-	size  int
-	bytes []byte
+	Kind  int
+	Size  int
+	Bytes []byte
 }
 
 func Read(conn net.Conn) (*SocketBuff, error) {
