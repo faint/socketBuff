@@ -8,7 +8,6 @@ import (
 const (
 	KindSize = 4
 	SizeSize = 4
-	SizeMax  = 512
 )
 
 type SocketBuff struct {
@@ -79,7 +78,7 @@ func readKind(conn net.Conn) (int, error) {
 }
 
 func readSize(conn net.Conn) (int, error) {
-	buf := make([]byte, SizeMax)
+	buf := make([]byte, SizeSize)
 	_, err := conn.Read(buf)
 	if err != nil {
 		return 0, err
