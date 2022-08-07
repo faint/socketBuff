@@ -6,13 +6,14 @@ import (
 )
 
 const (
-	KindSize = 16
+	KindSize = 4
+	SizeSize = 4
 	SizeMax  = 512
 )
 
 type SocketBuff struct {
-	Kind  int
-	Size  int
+	Kind  int32
+	Size  int32
 	Bytes []byte
 }
 
@@ -37,17 +38,19 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 	}
 
 	return &SocketBuff{
-		Kind:  kind,
-		Size:  len(bytes),
+		Kind:  int32(kind),
+		Size:  int32(len(bytes)),
 		Bytes: bytes,
 	}, nil
 }
 
 func Write(conn net.Conn, kind int, bytes []byte) error {
-	kindByte := []byte(strconv.Itoa(kind))
+	kindByte := make([]byte, KindSize)
+	kindByte = []byte(strconv.Itoa(kind))
 
 	size := len(bytes)
-	sizeByte := []byte(strconv.Itoa(size))
+	sizeByte := make([]byte, SizeSize)
+	sizeByte = []byte(strconv.Itoa(size))
 
 	joinByte := append(kindByte, sizeByte...)
 	joinByte = append(joinByte, bytes...)
