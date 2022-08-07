@@ -1,4 +1,4 @@
-package socketbuf
+package socketBuff
 
 import (
 	"net"
