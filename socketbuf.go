@@ -1,6 +1,9 @@
 package socketBuff
 
 import (
+	"bytes"
+	"errors"
+	"math"
 	"net"
 	"strconv"
 )
@@ -11,8 +14,8 @@ const (
 )
 
 type SocketBuff struct {
-	Kind  int32
-	Size  int32
+	Kind  int32 // if change this, you must change the kind check in the Write()
+	Size  int32 // if change this, you must change the size check in the Write()
 	Bytes []byte
 }
 
@@ -27,8 +30,8 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 		return nil, err
 	}
 
-	bytes := make([]byte, size)
-	for len(bytes) < size { // 实际长度大于缓存长度时，需多次读取
+	bytes := make([]byte, 0)
+	for len(bytes) < size { // when actual length bigger than buff length
 		splitBytes, err := readBytes(conn, size)
 		if err != nil {
 			return nil, err
@@ -44,12 +47,18 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 }
 
 func Write(conn net.Conn, kind int, bytes []byte) error {
+	if kind > math.MaxInt32 {
+		return errors.New("kind overflow")
+	}
 	kindByte := make([]byte, KindSize)
-	kindByte = []byte(strconv.Itoa(kind))
+	copy(kindByte, []byte(strconv.Itoa(kind)))
 
 	size := len(bytes)
+	if size > math.MaxInt32 {
+		return errors.New("size overflow")
+	}
 	sizeByte := make([]byte, SizeSize)
-	sizeByte = []byte(strconv.Itoa(size))
+	copy(sizeByte, []byte(strconv.Itoa(size)))
 
 	joinByte := append(kindByte, sizeByte...)
 	joinByte = append(joinByte, bytes...)
@@ -59,39 +68,50 @@ func Write(conn net.Conn, kind int, bytes []byte) error {
 		return err
 	}
 
+	for _, v := range joinByte {
+		println(v)
+	}
 	return nil
 }
 
 func readKind(conn net.Conn) (int, error) {
 	buf := make([]byte, KindSize)
 	_, err := conn.Read(buf)
-	println(buf)
 	if err != nil {
 		return 0, err
 	}
 
-	toInt, err := strconv.Atoi(string(buf))
+	buf = bytes.Trim(buf, "\x00")
+	bufString := string(buf)
+	if bufString == "" {
+		return 0, nil
+	}
+	toInt, err := strconv.ParseInt(bufString, 10, 32)
 	if err != nil {
 		return 0, err
 	}
 
-	return toInt, nil
+	return int(toInt), nil
 }
 
 func readSize(conn net.Conn) (int, error) {
 	buf := make([]byte, SizeSize)
 	_, err := conn.Read(buf)
-	println(buf)
 	if err != nil {
 		return 0, err
 	}
 
-	toInt, err := strconv.Atoi(string(buf))
+	buf = bytes.Trim(buf, "\x00")
+	bufString := string(buf)
+	if bufString == "" {
+		return 0, nil
+	}
+	toInt, err := strconv.ParseInt(bufString, 10, 32)
 	if err != nil {
 		return 0, err
 	}
 
-	return toInt, nil
+	return int(toInt), nil
 }
 
 func readBytes(conn net.Conn, size int) ([]byte, error) {
