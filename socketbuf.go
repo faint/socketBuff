@@ -9,8 +9,7 @@ import (
 )
 
 const (
-	KindSize = 4
-	SizeSize = 4
+	Int32Size = 4 // use for kind and size
 )
 
 type SocketBuff struct {
@@ -50,14 +49,14 @@ func Write(conn net.Conn, kind int, bytes []byte) error {
 	if kind > math.MaxInt32 {
 		return errors.New("kind overflow")
 	}
-	kindByte := make([]byte, KindSize)
+	kindByte := make([]byte, Int32Size)
 	copy(kindByte, []byte(strconv.Itoa(kind)))
 
 	size := len(bytes)
 	if size > math.MaxInt32 {
 		return errors.New("size overflow")
 	}
-	sizeByte := make([]byte, SizeSize)
+	sizeByte := make([]byte, Int32Size)
 	copy(sizeByte, []byte(strconv.Itoa(size)))
 
 	joinByte := append(kindByte, sizeByte...)
@@ -75,7 +74,7 @@ func Write(conn net.Conn, kind int, bytes []byte) error {
 }
 
 func readKind(conn net.Conn) (int, error) {
-	buf := make([]byte, KindSize)
+	buf := make([]byte, Int32Size)
 	_, err := conn.Read(buf)
 	if err != nil {
 		return 0, err
@@ -95,7 +94,7 @@ func readKind(conn net.Conn) (int, error) {
 }
 
 func readSize(conn net.Conn) (int, error) {
-	buf := make([]byte, SizeSize)
+	buf := make([]byte, Int32Size)
 	_, err := conn.Read(buf)
 	if err != nil {
 		return 0, err
