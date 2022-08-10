@@ -36,10 +36,6 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 		return nil, err
 	}
 
-	for i, v := range message {
-		println(i, v)
-	}
-
 	return &SocketBuff{
 		Kind:    int32(kind),
 		Size:    int32(len(message)),
@@ -82,7 +78,7 @@ func readKind(conn net.Conn) (int, error) {
 		return 0, err
 	}
 	for i, v := range buf {
-		println(i, v)
+		println("kind buf", i, v)
 	}
 
 	toInt := binary.BigEndian.Uint32(buf)
@@ -98,7 +94,7 @@ func readSize(conn net.Conn) (int, error) {
 		return 0, err
 	}
 	for i, v := range buf {
-		println(i, v)
+		println("size buf", i, v)
 	}
 
 	toInt := binary.BigEndian.Uint32(buf)
