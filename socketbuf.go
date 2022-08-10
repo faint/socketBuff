@@ -87,6 +87,7 @@ func readKind(conn net.Conn) (int, error) {
 
 	buf = bytes.Trim(buf, "\x00")
 	bufString := string(buf)
+	println("bufString:", bufString)
 	if bufString == "" {
 		return 0, nil
 	}
