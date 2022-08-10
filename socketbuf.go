@@ -13,9 +13,9 @@ const (
 )
 
 type SocketBuff struct {
-	Kind  int32 // if change this, you must change the kind check in the Write()
-	Size  int32 // if change this, you must change the size check in the Write()
-	Bytes []byte
+	Kind    int32 // if change this, you must change the kind check in the Write()
+	Size    int32 // if change this, you must change the size check in the Write()
+	Message []byte
 }
 
 func Read(conn net.Conn) (*SocketBuff, error) {
@@ -29,22 +29,19 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 		return nil, err
 	}
 
-	bytes := make([]byte, 0)
-	for len(bytes) < size { // when actual length bigger than buff length
-		splitBytes, err := readBytes(conn, size)
-		if err != nil {
+	message, err := readMessage(conn, size)
+	if err != nil {
 			return nil, err
 		}
-		bytes = append(bytes, splitBytes...)
 	}
-	for i, v := range bytes {
+	for i, v := range message {
 		println(i, v)
 	}
 
 	return &SocketBuff{
-		Kind:  int32(kind),
-		Size:  int32(len(bytes)),
-		Bytes: bytes,
+		Kind:    int32(kind),
+		Size:    int32(len(message)),
+		Message: message,
 	}, nil
 }
 
@@ -53,14 +50,14 @@ func Write(conn net.Conn, kind int, bytes []byte) error {
 		return errors.New("kind overflow")
 	}
 	kindByte := make([]byte, Int32Size)
-	copy(kindByte, []byte(strconv.Itoa(kind)))
+	copy(kindByte, strconv.Itoa(kind))
 
 	size := len(bytes)
 	if size > math.MaxInt32 {
 		return errors.New("size overflow")
 	}
 	sizeByte := make([]byte, Int32Size)
-	copy(sizeByte, []byte(strconv.Itoa(size)))
+	copy(sizeByte, strconv.Itoa(size))
 
 	joinByte := append(kindByte, sizeByte...)
 	joinByte = append(joinByte, bytes...)
@@ -122,7 +119,7 @@ func readSize(conn net.Conn) (int, error) {
 	return int(toInt), nil
 }
 
-func readBytes(conn net.Conn, size int) ([]byte, error) {
+func readMessage(conn net.Conn, size int) ([]byte, error) {
 	buf := make([]byte, size)
 	_, err := conn.Read(buf)
 	if err != nil {
