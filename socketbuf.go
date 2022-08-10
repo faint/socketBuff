@@ -31,9 +31,9 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 
 	message, err := readMessage(conn, size)
 	if err != nil {
-			return nil, err
-		}
+		return nil, err
 	}
+	
 	for i, v := range message {
 		println(i, v)
 	}
