@@ -23,17 +23,19 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 	if err != nil {
 		return nil, err
 	}
+	println("kind", kind)
 
 	size, err := readSize(conn)
 	if err != nil {
 		return nil, err
 	}
+	println("size", size)
 
 	message, err := readMessage(conn, size)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	for i, v := range message {
 		println(i, v)
 	}
