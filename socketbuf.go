@@ -81,7 +81,7 @@ func readKind(conn net.Conn) (int, error) {
 		println("kind buf", i, v)
 	}
 
-	toInt := binary.BigEndian.Uint32(buf)
+	toInt := binary.LittleEndian.Uint32(buf)
 	println("kind toInt:", toInt)
 
 	return int(toInt), nil
@@ -97,7 +97,7 @@ func readSize(conn net.Conn) (int, error) {
 		println("size buf", i, v)
 	}
 
-	toInt := binary.BigEndian.Uint32(buf)
+	toInt := binary.LittleEndian.Uint32(buf)
 	println("size toInt:", toInt)
 
 	return int(toInt), nil
