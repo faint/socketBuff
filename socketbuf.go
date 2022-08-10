@@ -31,6 +31,9 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 	if err != nil {
 		return nil, err
 	}
+	for i, v := range size {
+		println(i, v)
+	}
 
 	bytes := make([]byte, 0)
 	for len(bytes) < size { // when actual length bigger than buff length
@@ -39,6 +42,9 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 			return nil, err
 		}
 		bytes = append(bytes, splitBytes...)
+	}
+	for i, v := range bytes {
+		println(i, v)
 	}
 
 	return &SocketBuff{
