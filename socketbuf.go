@@ -1,7 +1,7 @@
 package socketBuff
 
 import (
-	"bytes"
+	"encoding/binary"
 	"errors"
 	"math"
 	"net"
@@ -85,16 +85,8 @@ func readKind(conn net.Conn) (int, error) {
 		println(i, v)
 	}
 
-	buf = bytes.Trim(buf, "\x00")
-	bufString := string(buf)
-	println("bufString:", bufString)
-	if bufString == "" {
-		return 0, nil
-	}
-	toInt, err := strconv.ParseInt(bufString, 10, 32)
-	if err != nil {
-		return 0, err
-	}
+	toInt := binary.BigEndian.Uint32(buf)
+	println("kind toInt:", toInt)
 
 	return int(toInt), nil
 }
@@ -109,15 +101,8 @@ func readSize(conn net.Conn) (int, error) {
 		println(i, v)
 	}
 
-	buf = bytes.Trim(buf, "\x00")
-	bufString := string(buf)
-	if bufString == "" {
-		return 0, nil
-	}
-	toInt, err := strconv.ParseInt(bufString, 10, 32)
-	if err != nil {
-		return 0, err
-	}
+	toInt := binary.BigEndian.Uint32(buf)
+	println("size toInt:", toInt)
 
 	return int(toInt), nil
 }
