@@ -23,16 +23,10 @@ func Read(conn net.Conn) (*SocketBuff, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i, v := range kind {
-		println(i, v)
-	}
 
 	size, err := readSize(conn)
 	if err != nil {
 		return nil, err
-	}
-	for i, v := range size {
-		println(i, v)
 	}
 
 	bytes := make([]byte, 0)
@@ -88,6 +82,9 @@ func readKind(conn net.Conn) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	for i, v := range buf {
+		println(i, v)
+	}
 
 	buf = bytes.Trim(buf, "\x00")
 	bufString := string(buf)
@@ -107,6 +104,9 @@ func readSize(conn net.Conn) (int, error) {
 	_, err := conn.Read(buf)
 	if err != nil {
 		return 0, err
+	}
+	for i, v := range buf {
+		println(i, v)
 	}
 
 	buf = bytes.Trim(buf, "\x00")
